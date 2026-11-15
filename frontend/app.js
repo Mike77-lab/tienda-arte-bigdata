@@ -20,11 +20,15 @@ async function loadProducts() {
         products.forEach(p => {
             const card = document.createElement("div");
             card.className = "product-card";
+            
+            // Formato de pesos colombianos (COP)
+            const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price);
+            
             card.innerHTML = `
                 <img src="${p.image}" alt="${p.name}">
                 <div class="product-info">
                     <h3>${p.name}</h3>
-                    <p>$${p.price} USD</p>
+                    <p>${formattedPrice}</p>
                     <button class="btn-buy" onclick="buyProduct('${p.name}')">Comprar Obra</button>
                 </div>
             `;

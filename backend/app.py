@@ -8,12 +8,12 @@ frontend_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '../fr
 app = Flask(__name__, static_folder=frontend_folder, static_url_path='')
 CORS(app)
 
-# Catálogo de productos de arte de ejemplo
+# Catálogo actualizado con precios en COP y enlaces de imágenes estables
 ART_PRODUCTS = [
-    {"id": 1, "name": "Atardecer Andino (Óleo)", "category": "Cuadro", "price": 320, "image": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=600&q=80"},
-    {"id": 2, "name": "Guerrero Cyberpunk (Figura 3D)", "category": "Figura", "price": 150, "image": "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80"},
-    {"id": 3, "name": "Abstracción Geométrica", "category": "Cuadro", "price": 410, "image": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=600&q=80"},
-    {"id": 4, "name": "Busto Neoclásico Mármol", "category": "Figura", "price": 280, "image": "https://images.unsplash.com/photo-1554188248-986afbb73242?auto=format&fit=crop&w=600&q=80"}
+    {"id": 1, "name": "Atardecer Andino (Óleo)", "category": "Cuadro", "price": 60000, "image": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80"},
+    {"id": 2, "name": "Guerrero Cyberpunk (Figura 3D)", "category": "Figura", "price": 80000, "image": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80"},
+    {"id": 3, "name": "Abstracción Geométrica", "category": "Cuadro", "price": 60000, "image": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=600&q=80"},
+    {"id": 4, "name": "Busto Neoclásico Mármol", "category": "Figura", "price": 80000, "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80"}
 ]
 
 @app.route('/')

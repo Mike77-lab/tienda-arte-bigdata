@@ -268,3 +268,43 @@ h2 {
     font-size: 0.75rem;
     display: block;
 }
+
+/* BANNER DE LA TIENDA */
+.store-banner {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.banner-content h1 {
+    font-size: 2rem;
+    color: #f8fafc;
+    margin-bottom: 0.8rem;
+}
+
+.banner-content p {
+    color: #94a3b8;
+    max-width: 700px;
+    margin: 0 auto 1.5rem auto;
+    font-size: 1rem;
+}
+
+.banner-tags {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.banner-tags span {
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
