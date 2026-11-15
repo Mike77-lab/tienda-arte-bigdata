@@ -10,10 +10,10 @@ CORS(app)
 
 # Catálogo actualizado con precios en COP y enlaces de imágenes estables
 ART_PRODUCTS = [
-    {"id": 1, "name": "Atardecer Andino (Óleo)", "category": "Cuadro", "price": 60000, "image": "images/Cuadro1.jpg"},
-    {"id": 2, "name": "Guerrero Cyberpunk (Figura 3D)", "category": "Figura", "price": 80000, "image": "images/Cuadro2.jpg"},
-    {"id": 3, "name": "Abstracción Geométrica", "category": "Cuadro", "price": 60000, "image": "images/Cuadro3.jpg"},
-    {"id": 4, "name": "Busto Neoclásico Mármol", "category": "Figura", "price": 80000, "image": "images/Cuadro4.jpg"}
+    {"id": 1, "name": "David de Miguel Angel", "category": "Cuadro", "price": 60000, "image": "images/Cuadro1.jpg"},
+    {"id": 2, "name": "2-D de Gorillaz", "category": "Figura", "price": 80000, "image": "images/Cuadro2.jpg"},
+    {"id": 3, "name": "KAWS Skeleton", "category": "Cuadro", "price": 60000, "image": "images/Cuadro3.jpg"},
+    {"id": 4, "name": "Sonic", "category": "Figura", "price": 80000, "image": "images/Cuadro4.jpg"}
 ]
 
 @app.route('/')
