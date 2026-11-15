@@ -10,10 +10,10 @@ CORS(app)
 
 # Catálogo actualizado con precios en COP y enlaces de imágenes estables
 ART_PRODUCTS = [
-    {"id": 1, "name": "Atardecer Andino (Óleo)", "category": "Cuadro", "price": 60000, "image": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80"},
-    {"id": 2, "name": "Guerrero Cyberpunk (Figura 3D)", "category": "Figura", "price": 80000, "image": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80"},
-    {"id": 3, "name": "Abstracción Geométrica", "category": "Cuadro", "price": 60000, "image": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=600&q=80"},
-    {"id": 4, "name": "Busto Neoclásico Mármol", "category": "Figura", "price": 80000, "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80"}
+    {"id": 1, "name": "Atardecer Andino (Óleo)", "category": "Cuadro", "price": 60000, "image": "images/Cuadro1.jpg"},
+    {"id": 2, "name": "Guerrero Cyberpunk (Figura 3D)", "category": "Figura", "price": 80000, "image": "images/Cuadro2.jpg"},
+    {"id": 3, "name": "Abstracción Geométrica", "category": "Cuadro", "price": 60000, "image": "images/Cuadro3.jpg"},
+    {"id": 4, "name": "Busto Neoclásico Mármol", "category": "Figura", "price": 80000, "image": "images/Cuadro4.jpg"}
 ]
 
 @app.route('/')
