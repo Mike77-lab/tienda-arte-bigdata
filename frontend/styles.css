@@ -271,24 +271,28 @@ h2 {
 
 /* BANNER DE LA TIENDA */
 .store-banner {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    /* Combinamos una capa oscura semitransparente con una de tus imágenes de arte de fondo */
+    background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.90)), url('images/Cuadro1.jpg');
+    background-size: cover;
+    background-position: center;
     border: 1px solid #334155;
     border-radius: 16px;
-    padding: 2.5rem;
+    padding: 3.5rem 2rem;
     text-align: center;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 .banner-content h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: #f8fafc;
     margin-bottom: 0.8rem;
+    font-weight: 700;
 }
 
 .banner-content p {
     color: #94a3b8;
     max-width: 700px;
-    margin: 0 auto 1.5rem auto;
+    margin: 0 auto 1.8rem auto;
     font-size: 1rem;
 }
 
@@ -300,10 +304,10 @@ h2 {
 }
 
 .banner-tags span {
-    background: #0f172a;
+    background: rgba(15, 23, 42, 0.9);
     border: 1px solid #38bdf8;
     color: #38bdf8;
-    padding: 0.4rem 1rem;
+    padding: 0.4rem 1.2rem;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
