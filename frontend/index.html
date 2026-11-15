@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtData Store - Simulador Big Data & Redes</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">🎨 <span>ArtData Store</span> <small>| Arquitectura de Datos y Big Data</small></div>
+        <div class="status-badge"><span class="pulse"></span> Red de Nodos Operativa</div>
+    </header>
+
+    <main class="container">
+        <!-- SECCIÓN 1: TIENDA DE ARTE -->
+        <section class="shop-section">
+            <h2>Catálogo de Obras y Figuras</h2>
+            <p class="subtitle">Cada interacción (visualización o compra) genera eventos en streaming para el motor de Big Data.</p>
+            
+            <div id="product-grid" class="grid-products">
+                <!-- Se cargará dinámicamente con JS -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: PANEL DE CONTROL DE BIG DATA Y RED DE DATOS -->
+        <section class="dashboard-section">
+            <div class="dashboard-header">
+                <h2>📊 Centro de Monitoreo de Big Data (Las 5 V)</h2>
+                <button id="btn-surge" class="btn-warning">⚡ Simular Tráfico Masivo (Pico de Carga)</button>
+            </div>
+
+            <!-- Métricas de las 5 V -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Volumen</h4>
+                    <p id="metric-volume" class="metric-value">0</p>
+                    <small>Registros procesados (DB / Data Lake)</small>
+                </div>
+                <div class="metric-card">
+                    <h4>Velocidad</h4>
+                    <p id="metric-velocity" class="metric-value">0.0</p>
+                    <small>Transacciones / Seg (Streaming)</small>
+                </div>
+                <div class="metric-card variety-card">
+                    <h4>Variedad</h4>
+                    <div class="variety-bars">
+                        <div>Estructurado: <span id="var-struct">60%</span></div>
+                        <div class="bar"><div id="bar-struct-fill" style="width: 60%;"></div></div>
+                        <div>Semi-estructurado: <span id="var-semi">25%</span></div>
+                        <div class="bar"><div id="bar-semi-fill" style="width: 25%;"></div></div>
+                        <div>No estructurado (Imágenes): <span id="var-unstruct">15%</span></div>
+                        <div class="bar"><div id="bar-unstruct-fill" style="width: 15%;"></div></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <h4>Veracidad</h4>
+                    <p id="metric-veracity" class="metric-value">0%</p>
+                    <small>Índice de calidad (Filtro de Ruido)</small>
+                </div>
+            </div>
+
+            <!-- Insights de Valor y Estado de la Red de Nodos -->
+            <div class="bottom-panel-grid">
+                <div class="panel-box">
+                    <h3>💡 Valor Analítico (Machine Learning / BI)</h3>
+                    <ul class="insights-list">
+                        <li><strong>Estilo más vendido:</strong> <span id="insight-style">Cargando...</span></li>
+                        <li><strong>Valor total transado:</strong> <span id="insight-sales">Cargando...</span></li>
+                        <li><strong>Acción recomendada:</strong> <span id="insight-action">Cargando...</span></li>
+                    </ul>
+                </div>
+
+                <div class="panel-box">
+                    <h3>🌐 Topología de Red de Datos (Nodos Activos)</h3>
+                    <div class="nodes-container" id="nodes-list">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
