@@ -35,6 +35,11 @@ def trigger_surge():
     """Simula tráfico masivo de Big Data"""
     return jsonify(engine.simulate_traffic_surge())
 
+@app.route('/api/bigdata/failover', methods=['POST'])
+def trigger_failover():
+    """Simula la caída de un nodo de Veracidad y su reemplazo automático"""
+    return jsonify(engine.simulate_node_failure())
+
 @app.route('/api/art/interact', methods=['POST'])
 def art_interact():
     """Registra una compra o visualización que alimenta el flujo de datos"""

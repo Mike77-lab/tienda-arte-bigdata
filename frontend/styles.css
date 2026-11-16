@@ -312,3 +312,29 @@ h2 {
     font-size: 0.85rem;
     font-weight: 600;
 }
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-danger:hover {
+    background: #b91c1c;
+}
+.node-item.failed {
+    border-left-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+.node-item.backup-active {
+    border-left-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+.node-item.standby {
+    border-left-color: #64748b;
+    opacity: 0.85;
+}

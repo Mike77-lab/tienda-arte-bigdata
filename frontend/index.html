@@ -44,7 +44,10 @@
         <section class="dashboard-section">
             <div class="dashboard-header">
                 <h2>📊 Centro de Monitoreo de Big Data (Las 5 V)</h2>
-                <button id="btn-surge" class="btn-warning">⚡ Simular Tráfico Masivo (Pico de Carga)</button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="btn-surge" class="btn-warning">⚡ Simular Tráfico Masivo</button>
+                    <button id="btn-failover" class="btn-danger">🔥 Simular Caída de Nodo (Veracidad)</button>
+                </div>
             </div>
 
             <!-- Métricas de las 5 V -->
@@ -73,7 +76,7 @@
                 <div class="metric-card">
                     <h4>Veracidad</h4>
                     <p id="metric-veracity" class="metric-value">0%</p>
-                    <small>Índice de calidad (Filtro de Ruido)</small>
+                    <small id="veracity-status-text">Validación Óptima (Nodo Principal)</small>
                 </div>
             </div>
 
