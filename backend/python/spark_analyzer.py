@@ -7,11 +7,15 @@ from pyspark.sql.functions import count, sum as spark_sum, col
 def run_spark_analysis():
     base_dir = Path(__file__).resolve().parents[1] / "data" / "cluster"
     
-    # Iniciar sesión de Apache Spark en modo local
+# Iniciar sesión de Apache Spark optimizada para contenedores de 512MB RAM (Render Free)
     spark = (
         SparkSession.builder
         .appName("ArtDataStore_BigData_Exam")
-        .master("local[*]")
+        .master("local[1]")
+        .config("spark.driver.memory", "256m")
+        .config("spark.executor.memory", "256m")
+        .config("spark.sql.shuffle.partitions", "2")
+        .config("spark.ui.enabled", "false")
         .config("spark.ui.showConsoleProgress", "false")
         .getOrCreate()
     )

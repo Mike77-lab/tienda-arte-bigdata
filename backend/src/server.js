@@ -39,9 +39,6 @@ const INITIAL_RECORDS = [
     { id: 1008, fecha: "2026-11-21T10:00:00Z", producto: "Busto Neoclásico Mármol", categoria: "Figura", valor: 80000 }
 ];
 
-/**
- * Inicializa la estructura de 4 carpetas (nodo_1..nodo_4) con primarios y réplicas circulares
- */
 function initCluster() {
     for (let i = 1; i <= 4; i++) {
         const nextNode = (i % 4) + 1;
@@ -60,21 +57,16 @@ function initCluster() {
         }
     }
 
-    // Verificar si el clúster está vacío para insertar los registros iniciales
     const p1File = path.join(clusterBase, 'nodo_1', 'primarios', 'registros.csv');
     if (fs.existsSync(p1File)) {
         const lines = fs.readFileSync(p1File, 'utf8').trim().split('\n');
         if (lines.length <= 1) {
             INITIAL_RECORDS.forEach(rec => writeRecordToCluster(rec));
-            console.log("📦 Clúster inicializado con 8 registros distribuidos en 4 nodos y replicados circularmente.");
+            console.log("📦 Clúster inicializado con 8 registros distribuidos en 4 nodos.");
         }
     }
 }
 
-/**
- * Regla de particionado determinista por ID: ((id - 1) % 4) + 1
- * Escribe en el nodo primario (si está activo) y sincroniza la réplica en el nodo vecino
- */
 function writeRecordToCluster(record) {
     const nodeNum = ((record.id - 1) % 4) + 1;
     const nextNode = (nodeNum % 4) + 1;
@@ -95,9 +87,6 @@ function writeRecordToCluster(record) {
     return { nodeNum, nextNode, partitionName };
 }
 
-/**
- * Obtiene el siguiente ID único leyendo todos los CSV activos o réplicas
- */
 function getNextUniqueId() {
     let maxId = 1000;
     for (let i = 1; i <= 4; i++) {
@@ -117,10 +106,6 @@ function getNextUniqueId() {
     return maxId + 1;
 }
 
-/**
- * Ejecuta el script real de Apache Spark (PySpark) con límite de memoria JVM (192MB)
- * y filtra advertencias de consola para extraer el JSON analítico limpio
- */
 function executePySpark() {
     return new Promise((resolve, reject) => {
         const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
@@ -149,4 +134,119 @@ function executePySpark() {
     });
 }
 
-// Inicializar clú
+initCluster();
+
+app.get('/api/products', (req, res) => {
+    res.json(ART_PRODUCTS);
+});
+
+app.get('/api/bigdata/status', async (req, res) => {
+    const startTime = Date.now();
+    try {
+        const sparkData = await executePySpark();
+        const elapsedMs = Date.now() - startTime;
+        const isFailover = sparkData.nodes.some(n => n.status.includes("Caído"));
+
+        res.json({
+            status: "ok",
+            response_time_ms: elapsedMs,
+            failover_active: isFailover,
+            spark: sparkData
+        });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+app.post('/api/art/interact', async (req, res) => {
+    const startTime = Date.now();
+    try {
+        const { item, category, price } = req.body;
+        const newId = getNextUniqueId();
+        const record = {
+            id: newId,
+            fecha: new Date().toISOString(),
+            producto: item || "Obra General",
+            categoria: category || "Cuadro",
+            valor: price || 60000
+        };
+
+        const routing = writeRecordToCluster(record);
+        const sparkData = await executePySpark();
+        const elapsedMs = Date.now() - startTime;
+
+        res.json({
+            status: "success",
+            inserted_record: record,
+            routing_info: `Guardado en nodo_${routing.nodeNum} (${routing.partitionName}) y replicado en nodo_${routing.nextNode}`,
+            response_time_ms: elapsedMs,
+            spark: sparkData
+        });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+app.post('/api/bigdata/surge', async (req, res) => {
+    const startTime = Date.now();
+    try {
+        for (let k = 0; k < 12; k++) {
+            const prod = ART_PRODUCTS[k % ART_PRODUCTS.length];
+            const newId = getNextUniqueId();
+            writeRecordToCluster({
+                id: newId,
+                fecha: new Date().toISOString(),
+                producto: prod.name,
+                categoria: prod.category,
+                valor: prod.price
+            });
+        }
+        const sparkData = await executePySpark();
+        const elapsedMs = Date.now() - startTime;
+
+        res.json({
+            status: "surge_completed",
+            inserted_batch: 12,
+            response_time_ms: elapsedMs,
+            spark: sparkData
+        });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+app.post('/api/bigdata/failover', async (req, res) => {
+    try {
+        const activeDir = path.join(clusterBase, 'nodo_2', 'primarios');
+        const offlineDir = path.join(clusterBase, 'nodo_2', 'primarios_OFFLINE');
+        const replicaFile = path.join(clusterBase, 'nodo_3', 'replicas', 'nodo_2', 'registros.csv');
+
+        if (fs.existsSync(activeDir)) {
+            fs.renameSync(activeDir, offlineDir);
+        } else if (fs.existsSync(offlineDir)) {
+            fs.renameSync(offlineDir, activeDir);
+            if (fs.existsSync(replicaFile)) {
+                fs.copyFileSync(replicaFile, path.join(activeDir, 'registros.csv'));
+            }
+        }
+
+        const sparkData = await executePySpark();
+        const isFailover = sparkData.nodes.some(n => n.status.includes("Caído"));
+
+        res.json({
+            status: "toggled",
+            failover_active: isFailover,
+            spark: sparkData
+        });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 ArtData Store (Node.js + PySpark + CSV Cluster) corriendo en puerto ${PORT}`);
+});
