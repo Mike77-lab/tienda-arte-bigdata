@@ -111,7 +111,7 @@ function executePySpark() {
         const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
         const envVars = {
             ...process.env,
-            _JAVA_OPTIONS: '-Xmx460m -Xms128m',
+            _JAVA_OPTIONS: '-Xmx480m -Xms128m',
             PYSPARK_PYTHON: pythonCmd
         };
 
