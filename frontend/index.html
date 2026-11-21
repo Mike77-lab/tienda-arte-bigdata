@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArtData Store - Simulador Big Data & Redes</title>
+    <title>ArtData Store - Arquitectura Big Data (Node.js + PySpark + CSV)</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Librería Chart.js para gráficos analíticos reales -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
     <header class="navbar">
-        <div class="logo">🎨 <span>ArtData Store</span> <small>| Arquitectura de Datos y Big Data</small></div>
-        <div class="status-badge"><span class="pulse"></span> Red de Nodos Operativa</div>
+        <div class="logo">🎨 <span>ArtData Store</span> <small>| Node.js + Apache Spark + CSV Cluster</small></div>
+        <div class="status-badge" id="cluster-badge"><span class="pulse"></span> Clúster 4 Nodos Operativo</div>
     </header>
 
     <main class="container">
@@ -21,78 +22,94 @@
         <section class="store-banner">
             <div class="banner-content">
                 <h1>Bienvenido a ArtData Store</h1>
-                <p>Exclusiva galería de cuadros y figuras coleccionables. Cada obra procesa analítica en tiempo real mediante nuestra red distribuida de Big Data.</p>
+                <p>Galería de cuadros y figuras coleccionables respaldada por almacenamiento distribuido CSV en 4 nodos con replicación circular y analítica en tiempo real con Apache Spark.</p>
                 <div class="banner-tags">
-                    <span>✨ Obras Originales</span>
-                    <span>📊 Analítica en Vivo</span>
-                    <span>🚀 Alta Concurrencia</span>
+                    <span>✨ Obras Originales (COP)</span>
+                    <span>⚡ Apache Spark (PySpark)</span>
+                    <span>🔄 Replicación Circular P1–P4</span>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 1: TIENDA DE ARTE -->
+        <!-- SECCIÓN 1: CATÁLOGO DE PRODUCTOS -->
         <section class="shop-section">
             <h2>Catálogo de Obras y Figuras</h2>
-            <p class="subtitle">Cada interacción (visualización o compra) genera eventos en streaming para el motor de Big Data.</p>
+            <p class="subtitle">Cada compra escribe un registro único en su partición primaria CSV y sincroniza la réplica en el nodo vecino.</p>
             
             <div id="product-grid" class="grid-products">
-                <!-- Se cargará dinámicamente con JS -->
+                <!-- Se carga dinámicamente con JS -->
             </div>
         </section>
 
-        <!-- SECCIÓN 2: PANEL DE CONTROL DE BIG DATA Y RED DE DATOS -->
+        <!-- SECCIÓN 2: PANEL DE CONTROL BIG DATA (LAS 5 V) -->
         <section class="dashboard-section">
             <div class="dashboard-header">
-                <h2>📊 Centro de Monitoreo de Big Data (Las 5 V)</h2>
+                <div>
+                    <h2>📊 Centro Analítico Apache Spark (Las 5 V)</h2>
+                    <small id="last-routing-log" style="color: #38bdf8;">Esperando transacciones...</small>
+                </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button id="btn-surge" class="btn-warning">⚡ Simular Tráfico Masivo</button>
-                    <button id="btn-failover" class="btn-danger">🔥 Simular Caída de Nodo (Veracidad)</button>
+                    <button id="btn-refresh" class="btn-secondary">🔄 Ejecutar Consulta Spark</button>
+                    <button id="btn-surge" class="btn-warning">⚡ Simular Lote (+12 Registros)</button>
+                    <button id="btn-failover" class="btn-danger">🔥 Simular Fallo en Nodo 2</button>
                 </div>
             </div>
 
-            <!-- Métricas de las 5 V -->
+            <!-- Tarjetas de las 5 V -->
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <h4>Volumen</h4>
+                    <h4>1. Volumen (CSV Únicos)</h4>
                     <p id="metric-volume" class="metric-value">0</p>
-                    <small>Registros procesados (DB / Data Lake)</small>
+                    <small id="metric-raw">Registros leídos: 0 (Particiones P1–P4)</small>
                 </div>
                 <div class="metric-card">
-                    <h4>Velocidad</h4>
-                    <p id="metric-velocity" class="metric-value">0.0</p>
-                    <small>Transacciones / Seg (Streaming)</small>
-                </div>
-                <div class="metric-card variety-card">
-                    <h4>Variedad</h4>
-                    <div class="variety-bars">
-                        <div>Estructurado: <span id="var-struct">60%</span></div>
-                        <div class="bar"><div id="bar-struct-fill" style="width: 60%;"></div></div>
-                        <div>Semi-estructurado: <span id="var-semi">25%</span></div>
-                        <div class="bar"><div id="bar-semi-fill" style="width: 25%;"></div></div>
-                        <div>No estructurado (Imágenes): <span id="var-unstruct">15%</span></div>
-                        <div class="bar"><div id="bar-unstruct-fill" style="width: 15%;"></div></div>
-                    </div>
+                    <h4>2. Velocidad (PySpark)</h4>
+                    <p id="metric-velocity" class="metric-value">0 ms</p>
+                    <small>Latencia consulta API + DataFrame</small>
                 </div>
                 <div class="metric-card">
-                    <h4>Veracidad</h4>
-                    <p id="metric-veracity" class="metric-value">0%</p>
-                    <small id="veracity-status-text">Validación Óptima (Nodo Principal)</small>
+                    <h4>3. Variedad (Esquema CSV)</h4>
+                    <p id="metric-variety" class="metric-value" style="font-size: 1.15rem; margin-top: 8px;">6 Campos</p>
+                    <small>id, fecha, producto, categoria, valor, particion</small>
+                </div>
+                <div class="metric-card">
+                    <h4>4. Veracidad (Integridad)</h4>
+                    <p id="metric-veracity" class="metric-value">100%</p>
+                    <small id="veracity-status-text">Filtro dropDuplicates(["id"]) activo</small>
                 </div>
             </div>
 
-            <!-- Insights de Valor y Estado de la Red de Nodos -->
+            <!-- SECCIÓN DE GRÁFICOS REALES (Requisito 5.2) -->
+            <div class="charts-grid">
+                <div class="panel-box">
+                    <h3>📈 Ventas Totales por Obra (COP) — Spark GroupBy</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                <div class="panel-box">
+                    <h3>🗂️ Distribución de Registros por Nodo Lógico</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="nodesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VALOR ANALÍTICO Y TOPOLOGÍA DE LOS 4 NODOS CSV -->
             <div class="bottom-panel-grid">
                 <div class="panel-box">
-                    <h3>💡 Valor Analítico (Machine Learning / BI)</h3>
+                    <h3>💡 5. Valor Analítico (Resultados PySpark)</h3>
                     <ul class="insights-list">
-                        <li><strong>Estilo más vendido:</strong> <span id="insight-style">Cargando...</span></li>
-                        <li><strong>Valor total transado:</strong> <span id="insight-sales">Cargando...</span></li>
-                        <li><strong>Acción recomendada:</strong> <span id="insight-action">Cargando...</span></li>
+                        <li><strong>Motor Analítico:</strong> <span id="insight-engine">Apache Spark (PySpark)</span></li>
+                        <li><strong>Obra más vendida:</strong> <span id="insight-style">Cargando...</span></li>
+                        <li><strong>Ingresos acumulados:</strong> <span id="insight-sales">$0 COP</span></li>
+                        <li><strong>Distribución por categoría:</strong> <span id="insight-categories">Cargando...</span></li>
                     </ul>
+                    <div id="failover-console" class="console-box" style="display: none;"></div>
                 </div>
 
                 <div class="panel-box">
-                    <h3>🌐 Topología de Red de Datos (Nodos Activos)</h3>
+                    <h3>🌐 Almacenamiento Distribuido (Replicación Circular)</h3>
                     <div class="nodes-container" id="nodes-list">
                         <!-- Se llena con JS -->
                     </div>
