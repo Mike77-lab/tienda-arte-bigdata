@@ -1,24 +1,23 @@
 FROM node:20-bookworm-slim
 
-# Instalar Python 3, pip y Java 17 (requisito obligatorio para Apache Spark / PySpark)
+# Instalar Python 3, pip, Java 17 y procps (comando ps requerido por Spark)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     default-jre-headless \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copiar e instalar dependencias de Node.js
-COPY backend/package*.json ./backend/
+# Copiar todo el proyecto
+COPY . .
+
+# Instalar dependencias de Node.js en backend
 RUN cd backend && npm install
 
-# Copiar e instalar PySpark
-COPY backend/python/requirements.txt ./backend/python/
+# Instalar PySpark en Python
 RUN pip3 install --no-cache-dir --break-system-packages -r backend/python/requirements.txt
-
-# Copiar el resto del proyecto (frontend y backend)
-COPY . .
 
 EXPOSE 3000
 
