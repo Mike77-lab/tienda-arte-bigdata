@@ -56,13 +56,16 @@ async function buyProduct(productName, category, price) {
         });
         const result = await response.json();
         
-        if (result.status === "success") {
+if (result.status === "success") {
             document.getElementById("last-routing-log").innerText = `✅ ID #${result.inserted_record.id}: ${result.routing_info} (${result.response_time_ms} ms)`;
             updateDashboardUI(result);
             alert(`¡Compra registrada!\nID Único: ${result.inserted_record.id}\n${result.routing_info}`);
+        } else {
+            document.getElementById("last-routing-log").innerText = `❌ Error del servidor: ${result.message}`;
         }
     } catch (error) {
         console.error("Error en compra:", error);
+        document.getElementById("last-routing-log").innerText = `❌ Error de conexión: ${error.message}`;
     }
 }
 
