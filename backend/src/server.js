@@ -118,19 +118,30 @@ function getNextUniqueId() {
 }
 
 /**
- * Ejecuta el script real de Apache Spark (PySpark) y devuelve el JSON analítico
+ * Ejecuta el script real de Apache Spark (PySpark) con límite de memoria JVM (192MB)
+ * y filtra advertencias de consola para extraer el JSON analítico limpio
  */
 function executePySpark() {
     return new Promise((resolve, reject) => {
         const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
-        execFile(pythonCmd, [sparkScript], { maxBuffer: 1024 * 1024 * 5 }, (error, stdout, stderr) => {
+        const envVars = {
+            ...process.env,
+            _JAVA_OPTIONS: '-Xmx192m -Xms64m',
+            PYSPARK_PYTHON: pythonCmd
+        };
+
+        execFile(pythonCmd, [sparkScript], { env: envVars, maxBuffer: 1024 * 1024 * 5 }, (error, stdout, stderr) => {
             if (error) {
                 console.error("Error ejecutando PySpark:", stderr || error.message);
                 return reject(new Error(stderr || error.message));
             }
             try {
-                const parsed = JSON.parse(stdout.trim());
-                resolve(parsed);
+                const lines = stdout.trim().split('\n');
+                const jsonLine = lines.reverse().find(line => line.trim().startsWith('{'));
+                if (!jsonLine) {
+                    throw new Error("No se encontró JSON en la salida: " + stdout);
+                }
+                resolve(JSON.parse(jsonLine));
             } catch (parseErr) {
                 reject(new Error("Salida inválida de PySpark: " + stdout));
             }
@@ -138,129 +149,4 @@ function executePySpark() {
     });
 }
 
-// Inicializar clúster al arrancar
-initCluster();
-
-// --- ENDPOINTS DE LA API ---
-
-app.get('/api/products', (req, res) => {
-    res.json(ART_PRODUCTS);
-});
-
-// Consultar estado analítico procesado por Apache Spark
-app.get('/api/bigdata/status', async (req, res) => {
-    const startTime = Date.now();
-    try {
-        const sparkData = await executePySpark();
-        const elapsedMs = Date.now() - startTime;
-        const isFailover = sparkData.nodes.some(n => n.status.includes("Caído"));
-
-        res.json({
-            status: "ok",
-            response_time_ms: elapsedMs,
-            failover_active: isFailover,
-            spark: sparkData
-        });
-    } catch (err) {
-        res.status(500).json({ status: "error", message: err.message });
-    }
-});
-
-// Registrar una compra desde la tienda -> Escribe en CSV + Réplica + Procesa con Spark
-app.post('/api/art/interact', async (req, res) => {
-    const startTime = Date.now();
-    try {
-        const { item, category, price } = req.body;
-        const newId = getNextUniqueId();
-        const record = {
-            id: newId,
-            fecha: new Date().toISOString(),
-            producto: item || "Obra General",
-            categoria: category || "Cuadro",
-            valor: price || 60000
-        };
-
-        const routing = writeRecordToCluster(record);
-        const sparkData = await executePySpark();
-        const elapsedMs = Date.now() - startTime;
-
-        res.json({
-            status: "success",
-            inserted_record: record,
-            routing_info: `Guardado en nodo_${routing.nodeNum} (${routing.partitionName}) y replicado en nodo_${routing.nextNode}`,
-            response_time_ms: elapsedMs,
-            spark: sparkData
-        });
-    } catch (err) {
-        res.status(500).json({ status: "error", message: err.message });
-    }
-});
-
-// Simular tráfico masivo (inserta un lote de 12 transacciones distribuidas en los 4 nodos)
-app.post('/api/bigdata/surge', async (req, res) => {
-    const startTime = Date.now();
-    try {
-        for (let k = 0; k < 12; k++) {
-            const prod = ART_PRODUCTS[k % ART_PRODUCTS.length];
-            const newId = getNextUniqueId();
-            writeRecordToCluster({
-                id: newId,
-                fecha: new Date().toISOString(),
-                producto: prod.name,
-                categoria: prod.category,
-                valor: prod.price
-            });
-        }
-        const sparkData = await executePySpark();
-        const elapsedMs = Date.now() - startTime;
-
-        res.json({
-            status: "surge_completed",
-            inserted_batch: 12,
-            response_time_ms: elapsedMs,
-            spark: sparkData
-        });
-    } catch (err) {
-        res.status(500).json({ status: "error", message: err.message });
-    }
-});
-
-// Prueba P05 & P07: Simular caída del nodo_2 (renombrando primarios) y recuperación desde nodo_3/replicas
-app.post('/api/bigdata/failover', async (req, res) => {
-    try {
-        const activeDir = path.join(clusterBase, 'nodo_2', 'primarios');
-        const offlineDir = path.join(clusterBase, 'nodo_2', 'primarios_OFFLINE');
-        const replicaFile = path.join(clusterBase, 'nodo_3', 'replicas', 'nodo_2', 'registros.csv');
-
-        if (fs.existsSync(activeDir)) {
-            // Simular fallo desactivando la carpeta primaria del nodo_2
-            fs.renameSync(activeDir, offlineDir);
-        } else if (fs.existsSync(offlineDir)) {
-            // Recuperación (Prueba P07): restaurar carpeta y sincronizar desde la réplica en nodo_3
-            fs.renameSync(offlineDir, activeDir);
-            if (fs.existsSync(replicaFile)) {
-                fs.copyFileSync(replicaFile, path.join(activeDir, 'registros.csv'));
-            }
-        }
-
-        const sparkData = await executePySpark();
-        const isFailover = sparkData.nodes.some(n => n.status.includes("Caído"));
-
-        res.json({
-            status: "toggled",
-            failover_active: isFailover,
-            spark: sparkData
-        });
-    } catch (err) {
-        res.status(500).json({ status: "error", message: err.message });
-    }
-});
-
-// Ruta principal
-app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-});
-
-app.listen(PORT, () => {
-    console.log(`🚀 ArtData Store (Node.js + PySpark + CSV Cluster) corriendo en puerto ${PORT}`);
-});
+// Inicializar clú
